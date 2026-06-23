@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ilario Lanches - Painel</title>
+  <link rel="stylesheet" href="painel.css">
+</head>
+<body>
+
+<header>
+  <h1>🍔 Ilario Lanches — Painel</h1>
+  <p>Pedidos em tempo real</p>
+  <span class="status-conexao" id="statusConexao">Conectando...</span>
+</header>
+
+<div class="painel-grid">
+  <section class="coluna coluna-entregas">
+    <h2>🛵 Entregas</h2>
+    <p class="contador" id="contadorEntregas">0 pedido(s)</p>
+    <div class="lista-pedidos" id="listaEntregas"></div>
+    <p class="lista-vazia" id="vazioEntregas">Nenhuma entrega pendente</p>
+  </section>
+
+  <section class="coluna coluna-retiradas">
+    <h2>🏪 Retirada no Local</h2>
+    <p class="contador" id="contadorRetiradas">0 pedido(s)</p>
+    <div class="lista-pedidos" id="listaRetiradas"></div>
+    <p class="lista-vazia" id="vazioRetiradas">Nenhuma retirada pendente</p>
+  </section>
+</div>
+
+<script src="config.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="supabase-client.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="pedido-pdf.js"></script>
+<script src="painel.js"></script>
+
+</body>
+</html>

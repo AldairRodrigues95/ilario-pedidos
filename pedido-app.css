@@ -1,0 +1,135 @@
+* { box-sizing: border-box; }
+
+body {
+  font-family: 'Segoe UI', Arial, sans-serif;
+  background: #1b1b1b;
+  color: #eee;
+  margin: 0;
+  padding: 16px;
+  display: flex;
+  justify-content: center;
+}
+
+.card {
+  background: #262626;
+  border-radius: 14px;
+  padding: 20px;
+  width: 100%;
+  max-width: 420px;
+  box-shadow: 0 4px 18px rgba(0,0,0,.5);
+}
+
+h1 {
+  font-size: 1.3rem;
+  margin: 0 0 4px;
+  color: #ffb13c;
+}
+
+p.sub {
+  margin: 0 0 18px;
+  font-size: .85rem;
+  color: #aaa;
+}
+
+label {
+  display: block;
+  font-size: .8rem;
+  margin: 12px 0 4px;
+  color: #ccc;
+}
+
+input, select, textarea {
+  width: 100%;
+  padding: 10px;
+  border-radius: 8px;
+  border: 1px solid #3c3c3c;
+  background: #1b1b1b;
+  color: #fff;
+  font-size: .95rem;
+}
+
+textarea {
+  resize: vertical;
+  min-height: 70px;
+}
+
+.row {
+  display: flex;
+  gap: 10px;
+}
+
+.row > div {
+  flex: 1;
+}
+
+.tipo-pedido {
+  display: flex;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.tipo-pedido label.tipo-option {
+  flex: 1;
+  margin: 0;
+  padding: 10px;
+  border-radius: 8px;
+  border: 2px solid #3c3c3c;
+  background: #1b1b1b;
+  text-align: center;
+  cursor: pointer;
+  font-size: .9rem;
+  color: #ccc;
+  transition: border-color .2s, color .2s;
+}
+
+.tipo-pedido input[type="radio"] {
+  display: none;
+}
+
+.tipo-pedido input[type="radio"]:checked + label.tipo-option {
+  border-color: #ffb13c;
+  color: #ffb13c;
+  font-weight: bold;
+}
+
+.hidden {
+  display: none !important;
+}
+
+button {
+  margin-top: 20px;
+  width: 100%;
+  padding: 14px;
+  border: none;
+  border-radius: 10px;
+  background: #ffb13c;
+  color: #111;
+  font-weight: bold;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+button:active {
+  transform: scale(0.98);
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.msg {
+  margin-top: 10px;
+  font-size: .8rem;
+  color: #ffb13c;
+  text-align: center;
+  min-height: 16px;
+}
+
+.msg.erro {
+  color: #ff6b6b;
+}
+
+.msg.sucesso {
+  color: #6bff8a;
+}
