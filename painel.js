@@ -5,9 +5,8 @@ function criarCardPedido(pedido, isNovo) {
   card.className = `pedido-card ${tipo}` + (isNovo ? ' novo' : '');
   card.dataset.id = pedido.id;
 
-  const total =
-    (parseFloat(pedido.valor) || 0) +
-    (parseFloat(pedido.taxa_entrega) || 0);
+  // 🔥 CORREÇÃO: total NÃO inclui taxa de entrega
+  const total = parseFloat(pedido.valor) || 0;
 
   let infoHtml = '';
 
@@ -71,8 +70,11 @@ function criarCardPedido(pedido, isNovo) {
 
       <div class="pedido-valores">
         <div>Valor: ${formatarMoeda(pedido.valor)}</div>
-        <div>Taxa entrega: ${formatarMoeda(pedido.taxa_entrega)}</div>
-        <div class="total">Total: ${formatarMoeda(total)}</div>
+
+        <div class="taxa">Taxa entrega (controle): ${formatarMoeda(pedido.taxa_entrega)}</div>
+
+        <div class="total">Total cliente: ${formatarMoeda(total)}</div>
+
         <div>
           <span class="label">Pagamento:</span>
           ${montarPagamentoTexto(pedido)}
