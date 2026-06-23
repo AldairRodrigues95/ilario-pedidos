@@ -193,6 +193,22 @@ header p {
   color: #ffb13c;
 }
 
+/* 🔴 REMOVE VALORES NA RETIRADA */
+.pedido-card.retirada .pedido-valores {
+  display: none;
+}
+
+/* 🔥 DESTAQUE RETIRADA (NOME + PEDIDO MAIOR) */
+.pedido-card.retirada .pedido-header strong {
+  font-size: 1.3rem;
+  color: #fff;
+}
+
+.pedido-card.retirada .pedido-info {
+  font-size: 1.05rem;
+  color: #fff;
+}
+
 /* =========================
    AÇÕES
 ========================= */
