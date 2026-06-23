@@ -69,74 +69,50 @@ function atualizarContadores() {
 }
 
 /* =========================
-   IMPRESSÃO TÉRMICA
+   IMPRESSÃO RAWBT
 ========================= */
-function imprimirPedidoTermico(pedido) {
-  const janela = window.open('', '_blank');
+function imprimirTermica(pedido) {
+  const total =
+    (parseFloat(pedido.valor) || 0) +
+    (parseFloat(pedido.taxa_entrega) || 0);
 
-  const total = (
-    parseFloat(pedido.valor || 0) +
-    parseFloat(pedido.taxa_entrega || 0)
-  ).toFixed(2);
+  const texto = `
+========================
+        PEDIDO
+========================
 
-  janela.document.write(`
-    <html>
-      <head>
-        <title>Pedido</title>
-        <style>
-          @page { size: 80mm auto; margin: 0; }
-          body {
-            width: 80mm;
-            font-family: monospace;
-            font-size: 12px;
-            padding: 5px;
-          }
-          .center { text-align: center; }
-          .linha { margin: 2px 0; }
-          .hr { border-top: 1px dashed #000; margin: 5px 0; }
-          .total { font-weight: bold; font-size: 14px; }
-        </style>
-      </head>
-      <body onload="window.print(); setTimeout(() => window.close(), 300);">
+Nome: ${pedido.nome}
+Telefone: ${pedido.telefone || '-'}
+Endereço: ${pedido.endereco || '-'}
 
-        <div class="center"><strong>🍽 PEDIDO</strong></div>
-        <div class="hr"></div>
+------------------------
+Pedido:
+${pedido.pedido || '-'}
 
-        <div class="linha"><strong>Nome:</strong> ${pedido.nome}</div>
-        <div class="linha"><strong>Telefone:</strong> ${pedido.telefone || '-'}</div>
-        <div class="linha"><strong>Endereço:</strong> ${pedido.endereco || '-'}</div>
+------------------------
+Valor: ${formatarMoeda(pedido.valor)}
+Taxa: ${formatarMoeda(pedido.taxa_entrega)}
+TOTAL: ${formatarMoeda(total)}
 
-        <div class="hr"></div>
+------------------------
+Pagamento: ${montarPagamentoTexto(pedido)}
 
-        <div class="linha"><strong>Pedido:</strong></div>
-        <div class="linha">${pedido.pedido || '-'}</div>
+========================
+   Obrigado!
+========================
+`;
 
-        <div class="hr"></div>
-
-        <div class="linha">Valor: ${formatarMoeda(pedido.valor)}</div>
-        <div class="linha">Taxa: ${formatarMoeda(pedido.taxa_entrega)}</div>
-
-        <div class="hr"></div>
-
-        <div class="center total">TOTAL: ${formatarMoeda(total)}</div>
-
-        <div class="hr"></div>
-        <div class="center">Obrigado!</div>
-
-      </body>
-    </html>
-  `);
-
-  janela.document.close();
+  const url = "rawbt:" + encodeURIComponent(texto);
+  window.location.href = url;
 }
 
 /* =========================
    CARD
 ========================= */
 function criarCardPedido(pedido, isNovo) {
-  const tipo = normalizarTipo(pedido.tipo_pedido);
-
   const card = document.createElement('div');
+
+  const tipo = normalizarTipo(pedido.tipo_pedido);
   card.className = `pedido-card ${tipo}` + (isNovo ? ' novo' : '');
   card.dataset.id = pedido.id;
 
@@ -158,20 +134,16 @@ function criarCardPedido(pedido, isNovo) {
     infoHtml += `<div><span class="label">Pedido:</span> ${pedido.pedido}</div>`;
   }
 
-  const botaoImprimir =
-    tipo === 'entrega'
-      ? `<button class="btn-imprimir" data-acao="imprimir">🖨 Imprimir</button>`
-      : '';
-
-  const botaoConcluir =
-    tipo === 'entrega'
-      ? `<button class="btn-concluir entrega-btn" data-acao="concluir">✓ Concluir</button>`
-      : `<button class="btn-concluir retirada-btn" data-acao="concluir">✓ Concluir</button>`;
+  const acoesHtml = `
+    <div class="pedido-acoes">
+      <button class="btn-imprimir" data-acao="imprimir">🖨 Imprimir</button>
+      <button class="btn-concluir" data-acao="concluir">✓ Concluído</button>
+    </div>
+  `;
 
   card.innerHTML = `
     <div class="pedido-header">
       <strong>${pedido.nome}</strong>
-      ${tipo === 'retirada' ? '<span style="color:#ff4d4d;font-weight:bold;">RETIRADA</span>' : ''}
       <span class="pedido-hora">${formatarHora(pedido.created_at)}</span>
     </div>
 
@@ -179,30 +151,25 @@ function criarCardPedido(pedido, isNovo) {
 
     <div class="pedido-valores">
       <div>Valor: ${formatarMoeda(pedido.valor)}</div>
-      <div>Taxa: ${formatarMoeda(pedido.taxa_entrega)}</div>
+      <div>Taxa entrega: ${formatarMoeda(pedido.taxa_entrega)}</div>
       <div class="total">Total: ${formatarMoeda(total)}</div>
       <div><span class="label">Pagamento:</span> ${montarPagamentoTexto(pedido)}</div>
     </div>
 
-    <div class="pedido-acoes">
-      ${botaoImprimir}
-      ${botaoConcluir}
-    </div>
+    ${acoesHtml}
   `;
 
-  if (tipo === 'entrega') {
-    card.querySelector('[data-acao="imprimir"]')
-      ?.addEventListener('click', () => imprimirPedidoTermico(pedido));
-  }
+  card.querySelector('[data-acao="imprimir"]')
+    ?.addEventListener('click', () => imprimirTermica(pedido));
 
   card.querySelector('[data-acao="concluir"]')
-    .addEventListener('click', () => concluirPedido(pedido.id, card));
+    ?.addEventListener('click', () => concluirPedido(pedido.id, card));
 
   return card;
 }
 
 /* =========================
-   RESTO
+   LISTA
 ========================= */
 function renderizarLista(tipo, containerId) {
   const container = document.getElementById(containerId);
@@ -223,16 +190,19 @@ function renderizarTudo() {
   atualizarContadores();
 }
 
+/* =========================
+   PEDIDOS
+========================= */
 function adicionarPedido(pedido, isNovo) {
   if (pedido.status !== 'novo') return;
   if (pedidosMap.has(pedido.id)) return;
 
   pedidosMap.set(pedido.id, pedido);
 
-  const tipo = normalizarTipo(pedido.tipo_pedido);
-
   const containerId =
-    tipo === 'retirada' ? 'listaRetiradas' : 'listaEntregas';
+    normalizarTipo(pedido.tipo_pedido) === 'retirada'
+      ? 'listaRetiradas'
+      : 'listaEntregas';
 
   const container = document.getElementById(containerId);
 
@@ -241,7 +211,10 @@ function adicionarPedido(pedido, isNovo) {
 
   atualizarContadores();
 
-  if (isNovo) tocarSomNovoPedido();
+  if (isNovo) {
+    tocarSomNovoPedido();
+    setTimeout(() => card.classList.remove('novo'), 600);
+  }
 }
 
 function removerPedido(id) {
@@ -253,6 +226,9 @@ function removerPedido(id) {
   renderizarTudo();
 }
 
+/* =========================
+   CONCLUIR
+========================= */
 async function concluirPedido(id, cardEl) {
   const btn = cardEl.querySelector('[data-acao="concluir"]');
 
@@ -266,7 +242,7 @@ async function concluirPedido(id, cardEl) {
 
   if (error) {
     btn.disabled = false;
-    btn.textContent = '✓ Concluir';
+    btn.textContent = '✓ Concluído';
     alert(error.message);
     return;
   }
@@ -274,6 +250,9 @@ async function concluirPedido(id, cardEl) {
   removerPedido(id);
 }
 
+/* =========================
+   CARREGAR
+========================= */
 async function carregarPedidos() {
   const { data, error } = await window.supabaseClient
     .from('pedidos')
@@ -281,7 +260,10 @@ async function carregarPedidos() {
     .eq('status', 'novo')
     .order('created_at', { ascending: false });
 
-  if (error) return console.error(error);
+  if (error) {
+    console.error(error);
+    return;
+  }
 
   pedidosMap.clear();
   data.forEach(p => pedidosMap.set(p.id, p));
@@ -289,6 +271,9 @@ async function carregarPedidos() {
   renderizarTudo();
 }
 
+/* =========================
+   REALTIME
+========================= */
 function iniciarRealtime() {
   const statusEl = document.getElementById('statusConexao');
 
@@ -304,7 +289,9 @@ function iniciarRealtime() {
       schema: 'public',
       table: 'pedidos'
     }, payload => {
-      if (payload.new.status === 'concluido') removerPedido(payload.new.id);
+      if (payload.new.status === 'concluido') {
+        removerPedido(payload.new.id);
+      }
     })
     .subscribe(status => {
       statusEl.textContent =
@@ -315,6 +302,9 @@ function iniciarRealtime() {
     });
 }
 
+/* =========================
+   INIT
+========================= */
 document.addEventListener('DOMContentLoaded', async () => {
   document.body.addEventListener('click', () => {
     if (!audioCtx)
